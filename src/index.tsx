@@ -7,10 +7,9 @@ import { useEffect } from 'preact/hooks';
 export function App() {
 	useEffect(() => {
 		const fun = async () => {
-			let data = await fetch('https://opentdb.com/api.php?amount=10');
+			let data = await fetch('https://opentdb.com/api.php?amount=3');
 			data.json().then((p)=>{
 				console.log(p);
-				console.log("win");
 			})
 		}
 		fun();
