@@ -3,11 +3,9 @@
   "homepage": "https://nandibme.github.io/Quiz-game/",
   "type": "module",
   "scripts": {
-    "start": "vite",
+    "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -18,7 +16,6 @@
   },
   "devDependencies": {
     "@preact/preset-vite": "^2.10.2",
-    "gh-pages": "^6.3.0",
     "typescript": "^5.9.3",
     "vite": "^7.0.4"
   },
