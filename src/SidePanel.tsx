@@ -1,13 +1,16 @@
 import { h } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
+import { OptionsPanel, GameOptions } from './OptionsPanel';
 import './styles/SidePanel.css';
 
 type Props = {
   open: boolean;
   onClose?: () => void;
+  onOptionsChange?: (options: GameOptions) => void;
+  onRestart?: () => void;
 };
 
-export function SidePanel({ open, onClose }: Props) {
+export function SidePanel({ open, onClose, onOptionsChange, onRestart }: Props) {
   const [visible, setVisible] = useState(open);
   const [closing, setClosing] = useState(false);
 
@@ -38,11 +41,10 @@ export function SidePanel({ open, onClose }: Props) {
         className={`sidepanel__surface${closing ? ' sidepanel__surface--closing' : ''}`}
         onClick={(e) => e.stopPropagation()}
       >
-        <header className="sidepanel__header">
-          <strong>Settings & Leaderboard</strong>
-          <button className="sidepanel__close" type="button" onClick={onClose}>×</button>
-        </header>
-        <p className="sidepanel__placeholder">Coming soon…</p>
+        <OptionsPanel
+          onOptionsChange={onOptionsChange || (() => {})}
+          onRestart={onRestart || (() => {})}
+        />
       </div>
     </div>
   );

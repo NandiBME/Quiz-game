@@ -16,9 +16,7 @@ export function IconButton({ children, label, onClick }: Props) {
       onClick={onClick}
       className="mui-icon-button"
       size="medium"
-      sx={{
-        color: 'var(--icon-color)',
-      }}
+      sx={{ color: 'var(--icon-color)' }}
     >
       {children}
     </MuiIconButton>
