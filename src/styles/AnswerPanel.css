@@ -1,0 +1,65 @@
+:root{
+  --text: #0f172a;
+  --btn-bg: #ffffff;
+  --btn-border: #cfd8e3;
+  --btn-shadow: rgba(15,23,42,0.04);
+  --correct-bg: #e6f7e6;
+  --wrong-bg: #fdecea;
+  --gap: 24px;
+}
+
+/* grid: 2 columns by default (2x2 for 4 answers, 1x2 for 2 answers) */
+.answer-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gap);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* if there's only one answer, make it span both columns and center it */
+.answer-list > li:only-child {
+  grid-column: 1 / -1;
+  justify-self: center;
+  max-width: 100%;
+  width: 100%;
+}
+
+/* item */
+.answer-item { margin: 0; }
+
+/* button */
+.answer-button {
+  width: 100%;
+  display: block;
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--btn-border);
+  background: var(--btn-bg) !important;
+  color: var(--text) !important;
+  box-shadow: 0 4px 10px var(--btn-shadow);
+  cursor: pointer;
+  font: inherit;
+  transition: background 120ms ease, transform 60ms ease, box-shadow 120ms ease;
+}
+
+/* states */
+.answer-button--correct { background: var(--correct-bg) !important; border-color: #c8e6c9 !important; }
+.answer-button--wrong   { background: var(--wrong-bg) !important;  border-color: #f2c2bf !important; }
+.answer-button--locked,
+.answer-button[disabled] {
+  cursor: default;
+  opacity: 1 !important;
+  color: var(--text) !important;
+}
+
+/* responsive: single column on narrow screens */
+@media (max-width: 520px) {
+  .answer-list { grid-template-columns: 1fr; }
+  .answer-list > li:only-child { grid-column: auto; }
+}
+

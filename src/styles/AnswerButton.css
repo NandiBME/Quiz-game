@@ -1,0 +1,135 @@
+/* larger answer buttons with centered text and enhanced animations */
+
+.answer-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* much larger padding for bigger buttons */
+  padding: 32px 24px;
+  min-height: 100px;
+  border-radius: 14px;
+  border: 2px solid #cfd8e3;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 1.35rem;
+  font-weight: 600;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+  letter-spacing: -0.3px;
+  line-height: 1.3;
+  box-shadow: 0 8px 24px rgba(15,23,42,0.06);
+  cursor: pointer;
+  text-align: center;
+  transition: all 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: answer-appear 280ms cubic-bezier(.2,.9,.3,1) both;
+  position: relative;
+  overflow: hidden;
+}
+
+/* entrance animation */
+@keyframes answer-appear {
+  from { 
+    opacity: 0; 
+    transform: translateY(12px) scale(0.94);
+  }
+  to   { 
+    opacity: 1; 
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* hover lift with shadow intensify */
+.answer-button:hover:not([disabled]) {
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 16px 40px rgba(15,23,42,0.12);
+  border-color: #a8b3c1;
+}
+
+/* focus ring */
+.answer-button:focus {
+  outline: none;
+  box-shadow: 
+    0 16px 40px rgba(15,23,42,0.12),
+    0 0 0 4px rgba(43,108,176,0.16);
+}
+
+/* active press with bounce-back */
+.answer-button:active:not([disabled]) {
+  transform: translateY(-2px) scale(0.98);
+}
+
+/* disabled / locked state */
+.answer-button[disabled],
+.answer-button.answer-button--locked {
+  cursor: default;
+  opacity: 0.92;
+  transform: none;
+}
+
+/* background colors for correct / wrong */
+.answer-button--correct {
+  background: linear-gradient(135deg, #e6f7e6 0%, #d4f1d4 100%);
+  border-color: #a8d5a8;
+  color: #1b4d1b;
+}
+.answer-button--wrong {
+  background: linear-gradient(135deg, #fdecea 0%, #fcd8d5 100%);
+  border-color: #f5a8a0;
+  color: #8b2e24;
+}
+
+/* glow pulse animations */
+@keyframes glowPulse {
+  0% { 
+    box-shadow: 
+      0 16px 40px rgba(15,23,42,0.12),
+      0 0 0 0 rgba(72,187,120,0.3);
+  }
+  50% { 
+    box-shadow: 
+      0 18px 44px rgba(15,23,42,0.14),
+      0 0 28px 8px rgba(72,187,120,0.15);
+  }
+  100% { 
+    box-shadow: 
+      0 16px 40px rgba(15,23,42,0.12),
+      0 0 0 0 rgba(72,187,120,0.3);
+  }
+}
+
+.answer-button--glow-correct {
+  animation: glowPulse 1.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  box-shadow: 0 18px 44px rgba(15,23,42,0.14), 0 0 18px 4px rgba(72,187,120,0.18);
+}
+
+@keyframes glowPulseWrong {
+  0% { 
+    box-shadow: 
+      0 16px 40px rgba(15,23,42,0.12),
+      0 0 0 0 rgba(244,63,94,0.3);
+  }
+  50% { 
+    box-shadow: 
+      0 18px 44px rgba(15,23,42,0.14),
+      0 0 28px 8px rgba(244,63,94,0.18);
+  }
+  100% { 
+    box-shadow: 
+      0 16px 40px rgba(15,23,42,0.12),
+      0 0 0 0 rgba(244,63,94,0.3);
+  }
+}
+
+.answer-button--glow-wrong {
+  animation: glowPulseWrong 1.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  box-shadow: 0 18px 44px rgba(15,23,42,0.14), 0 0 18px 4px rgba(244,63,94,0.18);
+}
+
+/* responsive adjustments */
+@media (max-width: 520px) {
+  .answer-button {
+    padding: 24px 18px;
+    min-height: 80px;
+    font-size: 1.2rem;
+  }
+}
