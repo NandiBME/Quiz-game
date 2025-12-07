@@ -33,7 +33,7 @@ export function WelcomePanel({ onStart }: Props) {
               fontSize: '1.1rem',
             }}
           >
-            Test your knowledge with our interactive quiz game. Answer multiple choice and true/false questions from various categories. Customize your experience with difficulty levels and question types.
+            Test your knowledge with our interactive quiz game. Answer multiple choice and true/false questions from various categories. Customize your experience with difficulty levels and question types. Higher difficulties give more points!
           </Typography>
 
           <Typography

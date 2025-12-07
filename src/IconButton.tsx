@@ -7,16 +7,19 @@ type Props = {
   children: ComponentChildren;
   label?: string;
   onClick?: () => void;
+  disabled?: boolean;
+  sx?: any;
 };
 
-export function IconButton({ children, label, onClick }: Props) {
+export function IconButton({ children, label, onClick, disabled = false, sx }: Props) {
   return (
     <MuiIconButton
       aria-label={label}
       onClick={onClick}
       className="mui-icon-button"
       size="medium"
-      sx={{ color: 'var(--icon-color)' }}
+      disabled={disabled}
+      sx={{ color: 'var(--icon-color)', ...sx }}
     >
       {children}
     </MuiIconButton>

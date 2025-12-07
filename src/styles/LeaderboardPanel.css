@@ -1,0 +1,77 @@
+.leaderboard-panel {
+  display: flex;
+  justify-content: center;
+  padding: 32px 16px 72px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.leaderboard-panel__surface {
+  width: min(680px, 95vw);
+  background: var(--panel-bg);
+  color: var(--text);
+  padding: 28px 24px;
+  border-radius: 16px;
+  border: 1px solid color-mix(in srgb, var(--panel-outline) 50%, transparent);
+}
+
+.lb-input .MuiInputBase-input {
+  color: var(--text);
+}
+.lb-input .MuiInputLabel-root {
+  color: var(--text);
+}
+.lb-input .MuiOutlinedInput-notchedOutline {
+  border-color: var(--btn-border);
+}
+.lb-input:hover .MuiOutlinedInput-notchedOutline {
+  border-color: var(--btn-border);
+}
+.lb-input.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: var(--accent);
+}
+
+.lb-btn {
+  background-color: var(--btn-bg) !important;
+  color: var(--btn-text) !important;
+  border: 1px solid var(--btn-border) !important;
+  box-shadow: 0 4px 12px var(--btn-shadow) !important;
+  font-weight: 700 !important;
+  text-transform: none !important;
+}
+.lb-btn:hover {
+  background-color: color-mix(in srgb, var(--btn-bg) 80%, var(--accent) 20%) !important;
+}
+
+.lb-item {
+  color: var(--text);
+}
+
+.lb-item :global(.MuiListItemText-primary) {
+  color: var(--text);
+}
+
+.lb-item :global(.MuiListItemText-secondary) {
+  color: var(--text);
+  opacity: 0.8;
+}
+
+.lb-top-1 {
+  background: linear-gradient(90deg, rgba(230, 200, 122, 0.45) 0%, rgba(230, 200, 122, 0.12) 60%, transparent 100%);
+}
+
+.lb-top-2 {
+  background: linear-gradient(90deg, rgba(192, 198, 207, 0.45) 0%, rgba(192, 198, 207, 0.12) 60%, transparent 100%);
+}
+
+.lb-top-3 {
+  background: linear-gradient(90deg, rgba(202, 162, 122, 0.45) 0%, rgba(202, 162, 122, 0.12) 60%, transparent 100%);
+}
+
+.lb-you {
+  border: 1px dashed color-mix(in srgb, var(--accent) 60%, transparent);
+  border-radius: 10px;
+  margin-top: 8px;
+  padding: 10px 12px;
+  box-sizing: border-box;
+}

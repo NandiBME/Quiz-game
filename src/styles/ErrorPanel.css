@@ -1,0 +1,17 @@
+.error-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 24px;
+  background: var(--app-bg);
+}
+
+.error-panel__surface {
+  width: min(600px, 90vw);
+  background: var(--panel-bg);
+  color: var(--text);
+  padding: 28px 32px;
+  border-radius: 16px;
+  border: 1px solid color-mix(in srgb, var(--panel-outline) 50%, transparent);
+}

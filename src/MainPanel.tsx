@@ -17,25 +17,31 @@ type QuizQuestion = {
 type Props = {
     questions: QuizQuestion[];
     onFinish?: (name: string, score: number) => void;
+    onComplete?: (score: number, trueScore: number) => void;
     time?: string;
     theme?: 'light' | 'dark';
     onToggleTheme?: () => void;
     onToggleSidePanel?: () => void;
+    elapsedSeconds: number;
 };
 
 export function MainPanel({
     questions,
     onFinish,
+    onComplete,
     time = '',
     theme = 'light',
     onToggleTheme,
     onToggleSidePanel,
+    elapsedSeconds,
 }: Props) {
     const [index, setIndex] = useState(0);
     const [score, setScore] = useState(0);
+    const [trueScore, setTrueScore] = useState(0);
     const [finished, setFinished] = useState(false);
     const [name, setName] = useState('');
     const [saved, setSaved] = useState(false);
+    const [answered, setAnswered] = useState(false);
     const surfaceRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -51,16 +57,32 @@ export function MainPanel({
 
     const q = questions[index];
 
+    function weight(difficulty: string) {
+        if (difficulty === 'hard') return 1.7;
+        if (difficulty === 'medium') return 1.3;
+        return 1;
+    }
+
     function handleAnswer(isCorrect: boolean) {
-        if (isCorrect) setScore((s) => s + 1);
+        if (answered) return;
+        setAnswered(true);
+        if (isCorrect) {
+            const w = weight(questions[index].difficulty);
+            setScore((s) => s + 1);
+            setTrueScore((t) => t + w);
+        }
     }
 
     function handleNext() {
         if (index < questions.length - 1) {
             setIndex((n) => n + 1);
+            setAnswered(false);
             return;
         }
         setFinished(true);
+        const timeFactor = 60 / Math.max(60, elapsedSeconds || 1); // <=60s keeps full value, slower lowers score
+        const adjustedTrueScore = trueScore * timeFactor;
+        onComplete?.(score, adjustedTrueScore);
     }
 
     function handleSave() {
@@ -77,6 +99,7 @@ export function MainPanel({
                 <div className="main-panel__inner">
                     <TopRow
                         time={time}
+                        elapsedSeconds={elapsedSeconds}
                         theme={theme}
                         onToggleTheme={onToggleTheme}
                         onToggleSidePanel={onToggleSidePanel}
@@ -108,6 +131,7 @@ export function MainPanel({
             <div className="main-panel__inner">
                 <TopRow
                     time={time}
+                    elapsedSeconds={elapsedSeconds}
                     theme={theme}
                     onToggleTheme={onToggleTheme}
                     onToggleSidePanel={onToggleSidePanel}
@@ -127,7 +151,7 @@ export function MainPanel({
                          onAnswer={handleAnswer}
                      />
                      <div className="mp-actions">
-                         <button className="main-panel__button" onClick={handleNext}>
+                         <button className="main-panel__button" onClick={handleNext} disabled={!answered}>
                              {index < questions.length - 1 ? 'Next' : 'Finish'}
                          </button>
                      </div>

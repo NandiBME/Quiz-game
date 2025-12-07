@@ -76,3 +76,12 @@ body {
               border-color 220ms ease,
               box-shadow 220ms ease;
 }
+
+/* Unify panel corner radius */
+.leaderboard-panel__surface,
+.error-panel__surface,
+.welcome-panel__surface,
+.main-panel__surface,
+.options-panel__surface {
+  border-radius: 16px;
+}

@@ -8,6 +8,10 @@ import { OptionsPanel, GameOptions } from './OptionsPanel';
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import { BottomPanel } from './BottomPanel';
+import { ErrorPanel } from './ErrorPanel';
+import './styles/ErrorPanel.css';
+import { LeaderboardPanel } from './LeaderboardPanel';
+import './styles/LeaderboardPanel.css';
 
 type ApiQuestion = {
     type: string;
@@ -40,7 +44,8 @@ type QuizQuestion = {
 
 type LeaderboardEntry = {
     name: string;
-    score: number;
+    score: number;          // correct answers
+    trueScore: number;      // weighted by difficulty
     date: string;
 };
 
@@ -55,12 +60,18 @@ function App() {
     const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>(() => {
         const raw = localStorage.getItem('quiz:leaderboard');
         try {
-            return raw ? (JSON.parse(raw) as LeaderboardEntry[]) : [];
+            const parsed = raw ? (JSON.parse(raw) as any[]) : [];
+            return parsed.map((e) => ({
+                name: e.name,
+                score: e.score,
+                trueScore: e.trueScore ?? e.score ?? 0,
+                date: e.date,
+            }));
         } catch {
             return [];
         }
     });
-    const [theme, setTheme] = useState<'light' | 'dark'>('light');
+    const [theme, setTheme] = useState<'light' | 'dark'>('dark');
     const [sideOpen, setSideOpen] = useState(false);
     const [gameStarted, setGameStarted] = useState(false);
     const [elapsed, setElapsed] = useState(0);
@@ -71,6 +82,7 @@ function App() {
         type: 'any',
     });
     const [pendingOptions, setPendingOptions] = useState<GameOptions>(gameOptions);
+    const [finishedStats, setFinishedStats] = useState<{ score: number; trueScore: number } | null>(null);
 
     const buildApiUrl = useCallback((opts: GameOptions) => {
         const params = new URLSearchParams();
@@ -114,6 +126,14 @@ function App() {
         fetchQuestions(opts);
     };
 
+    const handleRetry = () => {
+        setError(null);
+        setSideOpen(false);
+        setGameStarted(true);
+        setElapsed(0);
+        applyOptionsAndFetch(pendingOptions);
+    };
+
     const handleRestart = () => {
         setSideOpen(false);
         setGameStarted(true);
@@ -127,24 +147,46 @@ function App() {
         setElapsed(0);
     };
 
+    // save function
+    function saveToLeaderboard(name: string, correct: number, trueScore: number) {
+        const entry: LeaderboardEntry = {
+            name,
+            score: correct,
+            trueScore,
+            date: new Date().toISOString(),
+        };
+        setLeaderboard((prev) => {
+            const next = [entry, ...prev]
+                .sort((a, b) => b.trueScore - a.trueScore || b.score - a.score)
+                .slice(0, 10);
+            try {
+                localStorage.setItem('quiz:leaderboard', JSON.stringify(next));
+            } catch {
+                /* ignore */
+            }
+            return next;
+        });
+    }
+
+    // handlers
+    const handleComplete = (score: number, trueScore: number) => {
+        setFinishedStats({ score, trueScore });
+    };
+    const handleSaveScore = (name: string) => {
+        if (!finishedStats) return;
+        saveToLeaderboard(name, finishedStats.score, finishedStats.trueScore);
+    };
+    const handlePlayAgain = () => {
+        setFinishedStats(null);
+        setGameStarted(false);
+        setElapsed(0);
+    };
+
     const timeText = useMemo(() => {
         const m = Math.floor(elapsed / 60).toString().padStart(2, '0');
         const s = (elapsed % 60).toString().padStart(2, '0');
         return `${m}:${s}`;
     }, [elapsed]);
-
-    function saveToLeaderboard(name: string, finalScore: number) {
-        const entry: LeaderboardEntry = { name, score: finalScore, date: new Date().toISOString() };
-        setLeaderboard((prev) => {
-            const next = [entry, ...prev].sort((a, b) => b.score - a.score).slice(0, 10);
-            try {
-                localStorage.setItem('quiz:leaderboard', JSON.stringify(next));
-            } catch {
-                /* ignore storage errors */
-            }
-            return next;
-        });
-    }
 
     // ensure CSS variables switch when theme changes
     useEffect(() => {
@@ -153,19 +195,55 @@ function App() {
         root.setAttribute('data-theme', theme);
     }, [theme]);
 
+    // derive loading before effects
+    const loading = gameStarted && !error && !questions;
+
+    // tick timer only while playing (no error, not finished)
+    useEffect(() => {
+        if (!gameStarted || error || finishedStats !== null || loading) return;
+        const id = setInterval(() => setElapsed((t) => t + 1), 1000);
+        return () => clearInterval(id);
+    }, [gameStarted, error, finishedStats, loading]);
+
+    const errorCode = error?.match?.(/^HTTP\s+(\d+)/)?.[1] || error;
+
     return (
         <div className={`app theme-${theme}`}>
             <div className="app-shell">
-                {!gameStarted ? (
-                    <WelcomePanel onStart={handleStart} />
+                {error ? (
+                    <ErrorPanel code={errorCode} message={error} onRetry={handleRetry} />
+                ) : !gameStarted ? (
+                <WelcomePanel onStart={handleStart} />
+                ) : finishedStats !== null ? (
+                    <LeaderboardPanel
+                        score={finishedStats.score}
+                        trueScore={finishedStats.trueScore}
+                        entries={leaderboard}
+                        onSave={handleSaveScore}
+                        onPlayAgain={handlePlayAgain}
+                    />
+                ) : loading ? (
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            minHeight: '100vh',
+                            background: 'var(--app-bg)',
+                        }}
+                    >
+                        <CircularProgress size={60} sx={{ color: 'var(--accent)' }} />
+                    </Box>
                 ) : (
                     <MainPanel
                         questions={questions}
-                        onFinish={(name, sc) => saveToLeaderboard(name, sc)}
+                        onFinish={(name, sc) => saveToLeaderboard(name, sc, sc)}
+                        onComplete={handleComplete}
                         time={timeText}
                         theme={theme}
                         onToggleTheme={() => setTheme((t) => (t === 'light' ? 'dark' : 'light'))}
                         onToggleSidePanel={() => setSideOpen(true)}
+                        elapsedSeconds={elapsed}
                     />
                 )}
                 <SidePanel
