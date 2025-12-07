@@ -1,11 +1,12 @@
 import { render } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 import './style.css';
+import { QuestionPanel } from './MainPanel';
 
 type ApiQuestion = {
-    category: string;
     type: string;
     difficulty: string;
+    category: string;
     question: string;
     correct_answer: string;
     incorrect_answers: string[];
@@ -19,7 +20,7 @@ type ApiResponse = {
 type QuizQuestion = {
     question: string;
     correctAnswer: string;
-    options: string[]; // correct first, no shuffle
+    options: string[];
     category: string;
     difficulty: string;
 };
@@ -68,20 +69,7 @@ export function App() {
     if (!questions) return <div>Loading...</div>;
 
     return (
-        <div>
-            <h1>Quiz</h1>
-            {questions.map((q, i) => (
-                <section key={i}>
-                    <h3>{q.question}</h3>
-                    <p><em>{q.category} — {q.difficulty}</em></p>
-                    <ul>
-                        {q.options.map((opt, idx) => (
-                            <li key={idx}>{opt}</li>
-                        ))}
-                    </ul>
-                </section>
-            ))}
-        </div>
+        <QuestionPanel questions={questions} />
     );
 }
 
