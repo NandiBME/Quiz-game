@@ -1,20 +1,52 @@
 import { h } from 'preact';
+import { useState } from 'preact/hooks';
+import { AnswerButton } from './AnswerButton';
 import './styles/AnswerPanel.css';
-import { MultipleChoice } from './MultipleChoice';
-import { TrueOrFalse } from './TrueOrFalse';
 
 type Props = {
-  answers: string[]; // convention: answers[0] is the correct answer
-  type: 'multiple' | 'boolean';
-  onAnswer?: (isCorrect: boolean) => void;
+    answers: string[];
+    type: 'multiple' | 'boolean';
+    onAnswer: (isCorrect: boolean) => void;
 };
 
 export function AnswerPanel({ answers, type, onAnswer }: Props) {
-  const isBoolean = type === 'boolean';
+    const [answered, setAnswered] = useState(false);
+    const [correctIndex, setCorrectIndex] = useState(0); // first answer is correct
+    const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
-  return isBoolean ? (
-    <TrueOrFalse answers={answers} onAnswer={onAnswer} />
-  ) : (
-    <MultipleChoice answers={answers} onAnswer={onAnswer} />
-  );
+    function handleClick(index: number) {
+        if (answered) return;
+
+        const isCorrect = index === correctIndex;
+        setSelectedIndex(index);
+        setAnswered(true);
+        onAnswer(isCorrect);
+    }
+
+    return (
+        <ul className="answer-list">
+            {answers.map((answer, i) => {
+                let state: 'neutral' | 'correct' | 'wrong' = 'neutral';
+                if (answered) {
+                    if (i === correctIndex) {
+                        state = 'correct';
+                    } else if (i === selectedIndex) {
+                        state = 'wrong';
+                    }
+                }
+
+                return (
+                    <li key={`${i}-answer`} className="answer-item">
+                        <AnswerButton
+                            onClick={() => handleClick(i)}
+                            disabled={answered}
+                            state={state}
+                        >
+                            {answer}
+                        </AnswerButton>
+                    </li>
+                );
+            })}
+        </ul>
+    );
 }

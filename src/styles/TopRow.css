@@ -1,0 +1,35 @@
+.top-row {
+  position: relative;
+  width: 100%;
+  max-width: none; /* inherits width from main-panel__inner */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 4px 4px 10px;
+  background: transparent;
+  border: none;
+  z-index: 2;
+  pointer-events: auto;
+  margin: 0;
+}
+
+.top-row__timer,
+.top-row__actions {
+  pointer-events: auto;
+}
+
+.top-row__timer {
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--timer-bg);
+  font-weight: 600;
+  color: var(--text);
+  min-width: 72px;
+  text-align: center;
+}
+
+.top-row__actions {
+  display: flex;
+  gap: 8px;
+}

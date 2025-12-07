@@ -1,0 +1,115 @@
+/* cleaned: MUI handles most styling via sx; keep only optional resets */
+.icon-button,
+.md-icon-button {
+  all: unset;
+}
+
+.icon-button {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: none;
+  background: var(--icon-bg);
+  color: var(--icon-color);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: transform 120ms ease, box-shadow 160ms ease, background 120ms ease;
+}
+.icon-button:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(15,23,42,0.12); }
+.icon-button:active { transform: translateY(0); }
+.icon-button:focus { outline: 2px solid #94a3b8; outline-offset: 2px; }
+
+.md-icon-button {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: var(--icon-bg);
+  color: var(--icon-color);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  transition: background-color 160ms ease, box-shadow 180ms ease, transform 120ms ease;
+  box-shadow: 0 4px 12px var(--btn-shadow);
+}
+
+.md-icon-button:hover {
+  background: color-mix(in srgb, var(--icon-bg) 78%, var(--accent) 22%);
+  transform: translateY(-1px);
+}
+
+.md-icon-button:active {
+  transform: translateY(0);
+}
+
+.md-icon-button:focus-visible {
+  outline: none;
+  box-shadow:
+    0 4px 12px var(--btn-shadow),
+    0 0 0 3px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+/* ripple */
+.md-icon-button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: currentColor;
+  opacity: 0;
+  transform: scale(0);
+  transition: transform 280ms ease, opacity 280ms ease;
+}
+
+.md-icon-button:active::after {
+  opacity: 0.14;
+  transform: scale(1.8);
+}
+
+.md-icon-button__icon {
+  font-size: 1.1rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mui-icon-button {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--icon-bg);
+  color: var(--icon-color);
+  box-shadow: 0 4px 12px var(--btn-shadow);
+  transition: background-color 160ms ease, box-shadow 180ms ease, transform 120ms ease;
+}
+
+.mui-icon-button:hover {
+  background: color-mix(in srgb, var(--icon-bg) 78%, var(--accent) 22%);
+  transform: translateY(-1px);
+}
+
+.mui-icon-button:active {
+  transform: translateY(0);
+}
+
+.mui-icon-button:focus-visible {
+  box-shadow:
+    0 4px 12px var(--btn-shadow),
+    0 0 0 3px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.mui-icon-button .MuiTouchRipple-root {
+  color: currentColor;
+  opacity: 0.22;
+}
+
+/* ensure text color follows theme */
+.mui-icon-button svg {
+  color: var(--icon-color);
+}
