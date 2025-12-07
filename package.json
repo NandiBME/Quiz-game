@@ -1,5 +1,8 @@
 {
 	"private": true,
+	"predeploy": "npm run build",
+	"deploy": "gh-pages -d build",
+	"homepage": "https://nandibme.github.io/Quiz-game/",
 	"type": "module",
 	"scripts": {
 		"start": "vite",
