@@ -3,7 +3,7 @@
   "homepage": "https://nandibme.github.io/Quiz-game/",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "start": "vite",
     "build": "vite build",
     "preview": "vite preview"
   },
