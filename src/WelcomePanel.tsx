@@ -47,15 +47,15 @@ export function WelcomePanel({ onStart }: Props) {
       <Paper elevation={10} className="welcome-panel__surface">
         <Stack spacing={3} className="welcome-panel__stack">
           <Typography variant="h3" className="welcome-panel__title">
-            Quiz Game
+            🔥Nándi's Trivia 🔥
           </Typography>
 
           <Typography variant="body1" className="welcome-panel__description">
             Test your knowledge with this interactive quiz game. Answer multiple choice and true/false questions from various categories. Higher difficulties give more points!
           </Typography>
-
+            I'm watching you 😉
           <Typography variant="body2" className="welcome-panel__subtitle">
-            Are you sure you're ready?
+            
           </Typography>
 
           <Button
