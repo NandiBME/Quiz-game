@@ -11,6 +11,8 @@ type Props = {
   answers: string[];
   /** Callback invoked when an answer is selected, receives whether the answer was correct */
   onAnswer?: (isCorrect: boolean) => void;
+  /** Force all buttons to be disabled (e.g., due to timeout) */
+  forceDisabled?: boolean;
 };
 
 /**
@@ -35,16 +37,18 @@ type Props = {
  * @param props - Component props
  * @param props.answers - Array with correct answer first (e.g., ['True', 'False'])
  * @param props.onAnswer - Callback fired with true/false when user selects an answer
+ * @param props.forceDisabled - Whether to force disable all buttons (e.g., timeout)
  *
  * @example
  * ```tsx
  * <TrueOrFalse
  *   answers={['True', 'False']}
  *   onAnswer={(correct) => handleAnswer(correct)}
+ *   forceDisabled={timeExpired}
  * />
  * ```
  */
-export function TrueOrFalse({ answers, onAnswer }: Props) {
+export function TrueOrFalse({ answers, onAnswer, forceDisabled = false }: Props) {
   /** Selected answer index (0=True, 1=False), or null if none selected */
   const [sel, setSel] = useState<number | null>(null);
   /** Whether an answer has been selected and further selections are locked */
@@ -61,21 +65,23 @@ export function TrueOrFalse({ answers, onAnswer }: Props) {
    * @param i - Index of selected answer (0=True, 1=False)
    */
   function handle(i: number) {
-    if (locked) return;
+    if (locked || forceDisabled) return;
     setSel(i);
     setLocked(true);
     onAnswer?.(i === correctIndex);
   }
 
+  const isDisabled = locked || forceDisabled;
+
   return (
     <ul className="answer-list">
       {labels.map((label, i) => {
-        const correct = locked && i === correctIndex;
-        const wrong = locked && sel === i && i !== correctIndex;
+        const correct = isDisabled && i === correctIndex;
+        const wrong = isDisabled && sel === i && i !== correctIndex;
         const state = correct ? 'correct' : wrong ? 'wrong' : 'neutral';
         return (
           <li key={i} className="answer-item">
-            <AnswerButton onClick={() => handle(i)} disabled={locked} state={state}>
+            <AnswerButton onClick={() => handle(i)} disabled={isDisabled} state={state}>
               {label}
             </AnswerButton>
           </li>

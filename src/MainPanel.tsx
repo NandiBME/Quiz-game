@@ -4,6 +4,7 @@ import { AnswerPanel } from './AnswerPanel';
 import { QuestionPanel } from './QuestionPanel';
 import { TopRow } from './TopRow';
 import Paper from '@mui/material/Paper';
+import Chip from '@mui/material/Chip';
 
 /**
  * Quiz question structure with decoded content and answer options.
@@ -45,47 +46,6 @@ type Props = {
     elapsedSeconds: number;
 };
 
-/**
- * MainPanel is the primary quiz gameplay interface displaying questions and managing progression.
- * 
- * Features:
- * - Displays one question at a time with its answer options
- * - Tracks correct answers and calculates weighted score based on difficulty
- * - Shows question progress (e.g., "Question 3 / 10")
- * - Disables answer selection after first choice, requires Next button to proceed
- * - Applies time-based score adjustment (finishing within 60s keeps full score)
- * - Animates surface height changes between questions
- * - Difficulty-based visual theming (CSS class per difficulty level)
- * 
- * Score Calculation:
- * - Easy questions: 1.0 points
- * - Medium questions: 1.3 points
- * - Hard questions: 1.7 points
- * - Final trueScore adjusted by time: scores are reduced if completion takes >60s
- * 
- * @param props - Component props
- * @param props.questions - Array of quiz questions to present
- * @param props.onFinish - Legacy callback for quiz completion
- * @param props.onComplete - Callback with final score and trueScore
- * @param props.time - Formatted elapsed time string
- * @param props.theme - Current UI theme
- * @param props.onToggleTheme - Function to switch themes
- * @param props.onToggleSidePanel - Function to open options panel
- * @param props.elapsedSeconds - Raw elapsed seconds for score calculation
- * 
- * @example
- * ```tsx
- * <MainPanel
- *   questions={quizQuestions}
- *   onComplete={(score, trueScore) => handleFinish(score, trueScore)}
- *   time="02:30"
- *   theme="dark"
- *   onToggleTheme={toggleTheme}
- *   onToggleSidePanel={openOptions}
- *   elapsedSeconds={150}
- * />
- * ```
- */
 export function MainPanel({
     questions,
     onFinish,
@@ -96,27 +56,42 @@ export function MainPanel({
     onToggleSidePanel,
     elapsedSeconds,
 }: Props) {
-    /** Current question index (0-based) */
     const [index, setIndex] = useState(0);
-    /** Number of correct answers */
     const [score, setScore] = useState(0);
-    /** Weighted score accounting for difficulty */
     const [trueScore, setTrueScore] = useState(0);
-    /** Whether the quiz has been completed */
     const [finished, setFinished] = useState(false);
-    /** Player name input (used in finished state, legacy) */
     const [name, setName] = useState('');
-    /** Whether score has been saved (legacy) */
     const [saved, setSaved] = useState(false);
-    /** Whether the current question has been answered */
     const [answered, setAnswered] = useState(false);
-    /** Reference to the Paper surface element for height animations */
+    /** Countdown timer in seconds (10 to 0) */
+    const [countdown, setCountdown] = useState(10);
+    /** Whether the timer has expired */
+    const [timeExpired, setTimeExpired] = useState(false);
     const surfaceRef = useRef<HTMLDivElement>(null);
 
-    /**
-     * Updates CSS custom property for surface height to enable smooth transitions.
-     * Runs whenever question index, finished state, or name input changes.
-     */
+    // Reset countdown when question changes
+    useEffect(() => {
+        setCountdown(10);
+        setTimeExpired(false);
+    }, [index]);
+
+    // Countdown timer effect
+    useEffect(() => {
+        if (answered || timeExpired || finished) return;
+        
+        if (countdown <= 0) {
+            setTimeExpired(true);
+            setAnswered(true);
+            return;
+        }
+
+        const id = setInterval(() => {
+            setCountdown((c) => c - 1);
+        }, 1000);
+
+        return () => clearInterval(id);
+    }, [countdown, answered, timeExpired, finished]);
+
     useEffect(() => {
         if (surfaceRef.current) {
             const height = surfaceRef.current.scrollHeight;
@@ -130,24 +105,12 @@ export function MainPanel({
 
     const q = questions[index];
 
-    /**
-     * Calculates score weight multiplier based on difficulty level.
-     * 
-     * @param difficulty - Question difficulty ('easy', 'medium', or 'hard')
-     * @returns Weight multiplier (1.0 for easy, 1.3 for medium, 1.7 for hard)
-     */
     function weight(difficulty: string) {
         if (difficulty === 'hard') return 1.7;
         if (difficulty === 'medium') return 1.3;
         return 1;
     }
 
-    /**
-     * Handles answer selection, updating score if correct.
-     * Locks further answers until Next is pressed.
-     * 
-     * @param isCorrect - Whether the selected answer was correct
-     */
     function handleAnswer(isCorrect: boolean) {
         if (answered) return;
         setAnswered(true);
@@ -158,10 +121,6 @@ export function MainPanel({
         }
     }
 
-    /**
-     * Advances to the next question or finishes the quiz.
-     * Applies time-based score adjustment on completion.
-     */
     function handleNext() {
         if (index < questions.length - 1) {
             setIndex((n) => n + 1);
@@ -174,9 +133,15 @@ export function MainPanel({
         onComplete?.(score, adjustedTrueScore);
     }
 
-
-    /** CSS class name based on current question difficulty */
     const diffClass = `difficulty--${(q.difficulty || 'medium').toString().toLowerCase()}`;
+
+    const difficultyColors = {
+        easy: '#4caf50',
+        medium: '#ff9800',
+        hard: '#f44336',
+    };
+
+    const difficultyColor = q.difficulty ? difficultyColors[q.difficulty as 'easy' | 'medium' | 'hard'] : '#9e9e9e';
 
     if (finished) {
         return (
@@ -208,6 +173,7 @@ export function MainPanel({
              </div>
         );
     }
+
     return (
         <div className={`main-panel ${diffClass}`}>
             <div className="main-panel__inner">
@@ -220,17 +186,63 @@ export function MainPanel({
                 />
                 <Paper ref={surfaceRef} elevation={10} className="main-panel__surface">
                      <div className="mp-header">
-                         <strong>
-                             Question {index + 1} / {questions.length}
-                         </strong>
+                         <div className="mp-header__left">
+                             <span className="mp-question-count">
+                                 Question {index + 1} / {questions.length}
+                             </span>
+                             <div className="mp-header__badges">
+                                 {q.category && (
+                                     <Chip
+                                         label={q.category}
+                                         variant="outlined"
+                                         size="medium"
+                                         sx={{
+                                             backgroundColor: 'transparent',
+                                             borderColor: 'var(--accent)',
+                                             color: 'var(--accent)',
+                                             borderWidth: '2px',
+                                             fontWeight: 700,
+                                             fontSize: '0.875rem',
+                                             height: '32px',
+                                             fontFamily: '"Inter", "Roboto", sans-serif',
+                                             letterSpacing: '0.02em',
+                                         }}
+                                     />
+                                 )}
+                                 {q.difficulty && (
+                                     <Chip
+                                         label={q.difficulty.charAt(0).toUpperCase() + q.difficulty.slice(1)}
+                                         variant="outlined"
+                                         size="medium"
+                                         sx={{
+                                             backgroundColor: 'transparent',
+                                             borderColor: difficultyColor,
+                                             color: difficultyColor,
+                                             borderWidth: '2px',
+                                             fontWeight: 700,
+                                             fontSize: '0.875rem',
+                                             height: '32px',
+                                             fontFamily: '"Inter", "Roboto", sans-serif',
+                                             letterSpacing: '0.02em',
+                                         }}
+                                     />
+                                 )}
+                             </div>
+                         </div>
                          <div className="mp-score">Score: {score}</div>
                      </div>
-                     <QuestionPanel key={`q-${index}`} question={q.question} />
+                     <QuestionPanel 
+                         key={`q-${index}`} 
+                         question={q.question}
+                         countdown={countdown}
+                         answered={answered}
+                     />
                      <AnswerPanel
                          key={`a-${index}`}
                          answers={q.options}
                          type={q.type as 'multiple' | 'boolean'}
                          onAnswer={handleAnswer}
+                         disabled={timeExpired}
                      />
                      <div className="mp-actions">
                          <button className="main-panel__button" onClick={handleNext} disabled={!answered}>

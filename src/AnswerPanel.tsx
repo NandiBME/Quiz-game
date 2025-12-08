@@ -1,3 +1,4 @@
+import { h } from 'preact';
 import { MultipleChoice } from './MultipleChoice';
 import { TrueOrFalse } from './TrueOrFalse';
 import './styles/AnswerPanel.css';
@@ -12,6 +13,8 @@ type Props = {
     type: 'multiple' | 'boolean';
     /** Callback invoked when an answer is selected, receives whether the answer was correct */
     onAnswer: (isCorrect: boolean) => void;
+    /** Whether all buttons should be disabled (e.g., after timeout) */
+    disabled?: boolean;
 };
 
 /**
@@ -26,6 +29,7 @@ type Props = {
  * @param props.answers - Array of answer choices with correct answer first
  * @param props.type - Question type ('multiple' or 'boolean')
  * @param props.onAnswer - Function called with true/false when user selects an answer
+ * @param props.disabled - Whether all answer buttons should be disabled
  *
  * @example
  * ```tsx
@@ -33,12 +37,13 @@ type Props = {
  *   answers={['Paris', 'London', 'Berlin', 'Madrid']}
  *   type="multiple"
  *   onAnswer={(correct) => handleAnswer(correct)}
+ *   disabled={timeExpired}
  * />
  * ```
  */
-export function AnswerPanel({ answers, type, onAnswer }: Props) {
+export function AnswerPanel({ answers, type, onAnswer, disabled = false }: Props) {
     if (type === 'boolean') {
-        return <TrueOrFalse answers={answers} onAnswer={onAnswer} />;
+        return <TrueOrFalse answers={answers} onAnswer={onAnswer} forceDisabled={disabled} />;
     }
-    return <MultipleChoice answers={answers} onAnswer={onAnswer} />;
+    return <MultipleChoice answers={answers} onAnswer={onAnswer} forceDisabled={disabled} />;
 }

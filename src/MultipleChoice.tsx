@@ -10,7 +10,9 @@ type Props = {
   /** Array of answer options where the first element is the correct answer */
   answers: string[]; 
   /** Callback invoked when an answer is selected, receives whether the answer was correct */
-  onAnswer?: (isCorrect: boolean) => void 
+  onAnswer?: (isCorrect: boolean) => void;
+  /** Force all buttons to be disabled (e.g., due to timeout) */
+  forceDisabled?: boolean;
 };
 
 /**
@@ -52,16 +54,18 @@ function shuffle<T>(arr: T[]) {
  * @param props - Component props
  * @param props.answers - Array of answer strings with correct answer first
  * @param props.onAnswer - Callback fired with true/false when user selects an answer
+ * @param props.forceDisabled - Whether to force disable all buttons (e.g., timeout)
  * 
  * @example
  * ```tsx
  * <MultipleChoice 
  *   answers={['Paris', 'London', 'Berlin', 'Madrid']}
  *   onAnswer={(correct) => handleAnswer(correct)}
+ *   forceDisabled={timeExpired}
  * />
  * ```
  */
-export function MultipleChoice({ answers, onAnswer }: Props) {
+export function MultipleChoice({ answers, onAnswer, forceDisabled = false }: Props) {
   /** Selected answer index in shuffled array, or null if none selected */
   const [sel, setSel] = useState<number | null>(null);
   /** Whether an answer has been selected and further selections are locked */
@@ -82,23 +86,25 @@ export function MultipleChoice({ answers, onAnswer }: Props) {
    * @param i - Index of selected answer in shuffled array
    */
   function handle(i: number) {
-    if (locked) return;
+    if (locked || forceDisabled) return;
     setSel(i);
     setLocked(true);
     onAnswer?.(i === correctIndex);
   }
 
+  const isDisabled = locked || forceDisabled;
+
   return (
     <ul className="answer-list">
       {shuffled.map((item, i) => {
-        const correct = locked && i === correctIndex;
-        const wrong = locked && sel === i && i !== correctIndex;
+        const correct = isDisabled && i === correctIndex;
+        const wrong = isDisabled && sel === i && i !== correctIndex;
         const state = correct ? 'correct' : wrong ? 'wrong' : 'neutral';
         return (
           <li key={i} className="answer-item">
             <AnswerButton
               onClick={() => handle(i)}
-              disabled={locked}
+              disabled={isDisabled}
               state={state}
               className=""
             >
