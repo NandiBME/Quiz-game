@@ -1,1 +1,1 @@
-asd
+Nandi's Quiz Game - Kliensoldali Rendszerek
