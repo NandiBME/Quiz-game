@@ -6,8 +6,10 @@ export function BottomPanel() {
     <footer className="bottom-panel">
       <span className="bottom-panel__text">
         Made by Nándor Kanyicska
+        
       </span>
       <nav className="bottom-panel__links">
+        <span aria-hidden="true">•</span>
         <a href="https://www.placeholder.com" target="_blank" rel="noreferrer">
           LinkedIn
         </a>

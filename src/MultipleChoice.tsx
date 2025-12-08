@@ -1,6 +1,6 @@
 import { h } from 'preact';
 import { useMemo, useState } from 'preact/hooks';
-import { AnswerButton } from './AnswerButton'; // <-- use the new component
+import { AnswerButton } from './AnswerButton'; 
 import './styles/AnswerPanel.css';
 
 type Props = { answers: string[]; onAnswer?: (isCorrect: boolean) => void };

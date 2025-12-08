@@ -5,10 +5,10 @@
   box-sizing: border-box;
   width: 100%;
   flex: 1;
-  min-height: 0;
+  min-height: 100vh;
   align-items: center;
   justify-content: center;
-  padding: 48px 24px 56px;
+  padding: 24px;
   background: var(--app-bg);
   overflow: visible;
   isolation: isolate;
@@ -46,17 +46,57 @@
   display: inline-flex;
   flex-direction: column;
   align-items: stretch;
-  width: 60vw;
+  width: min(600px, 95vw);
   max-width: 600px;
   background: var(--panel-bg);
   color: var(--text);
   border-radius: 16px;
   border: 1px solid color-mix(in srgb, var(--panel-outline) 50%, transparent);
   box-shadow: none;
-  padding: 60px 44px;
+  padding: 32px 24px;
   gap: 24px;
   transition: background-color 180ms ease, border-color 180ms ease;
   height: auto;
   overflow: visible;
   z-index: 1;
+}
+
+.welcome-panel__stack {
+  text-align: center;
+  font-family: 'Roboto', sans-serif;
+}
+
+.welcome-panel__title {
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+  font-family: 'Roboto', sans-serif;
+}
+
+.welcome-panel__description {
+  color: var(--muted);
+  line-height: 1.6;
+  font-size: 1.1rem;
+  font-family: 'Roboto', sans-serif;
+}
+
+.welcome-panel__subtitle {
+  color: var(--muted);
+  font-style: italic;
+  font-family: 'Roboto', sans-serif;
+}
+
+.welcome-panel__btn {
+  background-color: var(--accent) !important;
+  color: var(--accent-text) !important;
+  font-weight: 700 !important;
+  padding: 12px !important;
+  font-size: 1.1rem !important;
+  margin-top: 16px !important;
+  font-family: 'Roboto', sans-serif !important;
+  text-transform: none !important;
+}
+
+.welcome-panel__btn:hover {
+  background-color: color-mix(in srgb, var(--accent) 85%, black 15%) !important;
 }

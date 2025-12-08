@@ -62,19 +62,18 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center; /* center vertically with top row + panel */
+  justify-content: center; 
   gap: 16px;
   padding: 16px 16px 32px;
   box-sizing: border-box;
 }
 
-/* theme transition applied globally */
 .theme-transition,
 .theme-transition * {
-  transition: background-color 220ms ease,
-              color 220ms ease,
-              border-color 220ms ease,
-              box-shadow 220ms ease;
+  transition: background-color 400ms ease,
+              color 400ms ease,
+              border-color 400ms ease,
+              box-shadow 400ms ease;
 }
 
 /* Unify panel corner radius */
