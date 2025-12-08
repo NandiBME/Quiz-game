@@ -5,10 +5,42 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import './styles/WelcomePanel.css';
 
+/**
+ * Props for the WelcomePanel component.
+ */
 type Props = {
+  /** Callback invoked when the user clicks the Start Quiz button */
   onStart: () => void;
 };
 
+/**
+ * WelcomePanel is the initial landing screen displayed before starting a quiz.
+ *
+ * The panel provides an introduction to the quiz game and prompts the user
+ * to begin. It features:
+ * - Large title ("Quiz Game")
+ * - Description of game features and mechanics
+ * - Prominent "Start Quiz" button
+ *
+ * The component uses Material-UI components for consistent styling and
+ * elevation effects, with custom CSS classes for theme integration.
+ * All text uses the Roboto font family for consistency.
+ *
+ * Visual Design:
+ * - Centered layout with maximum width constraint
+ * - Elevated Paper surface with rounded corners
+ * - Vertical stack spacing for content hierarchy
+ * - Accent-colored call-to-action button
+ * - Adapts to light/dark theme automatically
+ *
+ * @param props - Component props
+ * @param props.onStart - Function called when Start Quiz button is clicked
+ *
+ * @example
+ * ```tsx
+ * <WelcomePanel onStart={() => initializeQuiz()} />
+ * ```
+ */
 export function WelcomePanel({ onStart }: Props) {
   return (
     <div className="welcome-panel">

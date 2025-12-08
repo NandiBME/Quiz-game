@@ -12,43 +12,115 @@ import Checkbox from '@mui/material/Checkbox';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 
+/**
+ * Configuration options for a quiz game session.
+ */
 export type GameOptions = {
+  /** Number of questions in the quiz (3-30) */
   amount: number;
+  /** Category ID (0 = any category, or specific category from API) */
   category: number;
+  /** Difficulty level or 'any' for mixed difficulties */
   difficulty: 'easy' | 'medium' | 'hard' | 'any';
+  /** Question type filter or 'any' for both types */
   type: 'boolean' | 'multiple' | 'any';
 };
 
+/**
+ * Props for the OptionsPanel component.
+ */
 type Props = {
+  /** Callback invoked when any option changes with new complete options object */
   onOptionsChange: (options: GameOptions) => void;
+  /** Callback invoked when user clicks the Restart Game button */
   onRestart: () => void;
 };
 
+/**
+ * OptionsPanel provides a form interface for configuring quiz game settings.
+ *
+ * The panel includes controls for:
+ * - Number of questions (3-30 via slider)
+ * - Category selection (25+ categories from Open Trivia Database)
+ * - Difficulty level (easy, medium, hard, or any)
+ * - Question types (true/false, multiple choice, or both)
+ *
+ * Features:
+ * - Real-time option updates via onOptionsChange callback
+ * - Type checkboxes can be combined: both unchecked = any type
+ * - Restart button to apply changes and start a new game
+ * - Themed UI adapting to light/dark modes
+ *
+ * Question Type Logic:
+ * - Both checkboxes checked → type: 'any'
+ * - Only True/False checked → type: 'boolean'
+ * - Only Multiple Choice checked → type: 'multiple'
+ * - Neither checked → type: 'any'
+ *
+ * @param props - Component props
+ * @param props.onOptionsChange - Function called with updated options on every change
+ * @param props.onRestart - Function called when Restart Game button is clicked
+ *
+ * @example
+ * ```tsx
+ * <OptionsPanel
+ *   onOptionsChange={(opts) => setPendingOptions(opts)}
+ *   onRestart={() => startNewGame()}
+ * />
+ * ```
+ */
 export function OptionsPanel({ onOptionsChange, onRestart }: Props) {
+  /** Number of questions to fetch (3-30) */
   const [amount, setAmount] = useState(3);
+  /** Selected category ID (0 = any) */
   const [category, setCategory] = useState(0);
+  /** Selected difficulty level */
   const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard' | 'any'>('any');
+  /** Whether True/False questions are enabled */
   const [typeBoolean, setTypeBoolean] = useState(false);
+  /** Whether Multiple Choice questions are enabled */
   const [typeMultiple, setTypeMultiple] = useState(false);
 
+  /**
+   * Handles slider change for number of questions.
+   * Updates local state and notifies parent of option change.
+   *
+   * @param _ - Unused event parameter
+   * @param value - New slider value (number or array)
+   */
   function handleAmountChange(_: any, value: number | number[]) {
     const newAmount = Array.isArray(value) ? value[0] : value;
     setAmount(newAmount);
     updateOptions({ amount: newAmount });
   }
 
+  /**
+   * Handles category dropdown selection change.
+   *
+   * @param e - Select change event
+   */
   function handleCategoryChange(e: any) {
     const newCategory = parseInt(e.target.value, 10);
     setCategory(newCategory);
     updateOptions({ category: newCategory });
   }
 
+  /**
+   * Handles difficulty dropdown selection change.
+   *
+   * @param e - Select change event
+   */
   function handleDifficultyChange(e: any) {
     const newDifficulty = e.target.value as 'easy' | 'medium' | 'hard' | 'any';
     setDifficulty(newDifficulty);
     updateOptions({ difficulty: newDifficulty });
   }
 
+  /**
+   * Toggles a question type checkbox.
+   *
+   * @param typeKey - Which type checkbox to toggle ('boolean' or 'multiple')
+   */
   function handleTypeChange(typeKey: 'boolean' | 'multiple') {
     if (typeKey === 'boolean') {
       setTypeBoolean(!typeBoolean);
@@ -57,6 +129,11 @@ export function OptionsPanel({ onOptionsChange, onRestart }: Props) {
     }
   }
 
+  /**
+   * Determines the API type parameter based on checkbox states.
+   *
+   * @returns Type value for API request ('boolean', 'multiple', or 'any')
+   */
   function getTypeValue(): 'boolean' | 'multiple' | 'any' {
     if (typeBoolean && typeMultiple) return 'any';
     if (typeBoolean) return 'boolean';
@@ -64,6 +141,11 @@ export function OptionsPanel({ onOptionsChange, onRestart }: Props) {
     return 'any';
   }
 
+  /**
+   * Constructs complete options object and notifies parent component.
+   *
+   * @param partial - Partial options object to merge with current state
+   */
   function updateOptions(partial: Partial<GameOptions>) {
     const options: GameOptions = {
       amount,
@@ -75,10 +157,14 @@ export function OptionsPanel({ onOptionsChange, onRestart }: Props) {
     onOptionsChange(options);
   }
 
+  /**
+   * Triggers game restart with current options.
+   */
   function handleRestart() {
     onRestart();
   }
 
+  /** Available quiz categories from Open Trivia Database API */
   const categoryOptions = [
     { id: 0, name: 'Any Category' },
     { id: 9, name: 'General Knowledge' },
